@@ -32,12 +32,14 @@ const server = http.createServer((req, res) => {
       email: "johndoe@example.com",
     });
 
-    return res.end("Criação de de usuários");
+    //Created
+    return res.writeHead(201).end();
   }
 
   console.log(method, url);
 
-  return res.end("hello world!");
+  //quando nenhum dos métodos são chamados
+  return res.whiteHead(404).end("hello world!");
 });
 
 //está ouvindo nesta porta
