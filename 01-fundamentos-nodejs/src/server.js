@@ -13,8 +13,24 @@ import http from "node:http";
 
 const users = [];
 
-const server = http.createServer((req, res) => {
+const server = http.createServer(async (req, res) => {
   const { method, url } = req;
+
+  const buffers = [];
+
+  for await (const chunk of req) {
+    buffers.push(chunk);
+  }
+
+  //try catch para caso de errors
+  try {
+    //com o JSON.parse é possível transformar em um objeto do JS
+    req.body = JSON.parse(Buffer.concat(buffers).toString());
+    //por aqui da para ver ao enviar um body pelo put no postman
+    console.log(reqBody);
+  } catch {
+    req.body = null;
+  }
 
   if (method === "GET" && url === "/users") {
     //early return
@@ -22,10 +38,11 @@ const server = http.createServer((req, res) => {
     //então trabalhamos como JSON, para transitar os dados
     return res
       .setHeader("Content-Type", "application/json")
-      .end("Listagem de usuários", JSON.stringify(users));
+      .end(JSON.stringify(users));
   }
 
   if (method === "POST" && url === "/users") {
+    const { name, email } = reqBody;
     users.push({
       id: 1,
       name: "John Doe",
